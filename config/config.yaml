@@ -1,0 +1,59 @@
+# EcoLoop — runtime configuration.
+# Paths may be absolute or relative to the repo root. setup.ps1/setup.sh will
+# auto-detect the EnergyPlus install and can rewrite `energyplus.install_dir`.
+
+energyplus:
+  # Root of the EnergyPlus install (contains energyplus.exe + pyenergyplus/).
+  # Leave as-is; config.py will also honour the ENERGYPLUS_DIR env var and try
+  # to auto-discover common install locations if this path does not exist.
+  install_dir: "C:/EnergyPlusV26-1-0"
+  version: "26.1.0"
+
+paths:
+  idf: "models/baseline.idf"          # canonical, idf_prep-prepared building
+  epw: "models/weather.epw"           # weather file (Golden, CO TMY3)
+  output_dir: "outputs"               # per-run subdirs are created underneath
+  generated_dir: "models/generated"   # AI-modified .idf snapshots
+
+# Simulation run period. `--smoke` overrides this with a single design day.
+run_period:
+  begin_month: 7
+  begin_day: 1
+  end_month: 7
+  end_day: 8            # one representative summer week by default
+  # For a design-day-spanning month set end_day: 31.
+
+# Thermal zones we control. Must match zone names in the .idf. For
+# 5ZoneAirCooled.idf the conditioned zones are SPACE1-1 .. SPACE5-1.
+zones:
+  - "SPACE1-1"
+  - "SPACE2-1"
+  - "SPACE3-1"
+  - "SPACE4-1"
+  - "SPACE5-1"
+
+llm:
+  # Default is the 3B model for CPU runnability (~1 decision in seconds vs ~1 min
+  # for 7B on CPU). On a GPU machine switch to qwen2.5:7b-instruct for stronger
+  # tool calling. Alternates: qwen2.5:7b-instruct, llama3.1:8b, mistral-nemo.
+  model: "qwen2.5:3b-instruct"
+  host: "http://localhost:11434"
+  timeout_s: 60                       # hard per-call timeout (tenacity)
+  num_predict: 256                    # cap output tokens for latency
+  temperature: 0.1                    # near-deterministic control decisions
+  max_tool_iters: 4                   # agent-loop iteration cap
+
+mcp:
+  host: "127.0.0.1"
+  port: 8765
+  transport: "streamable-http"        # FastMCP transport used by client+server
+
+supervisor:
+  interval_sim_minutes: 60            # throttle: one decision per simulated hour
+  snapshot_every_n_decisions: 6       # write an .idf snapshot at most this often
+  breach_triggers_early: true         # also wake on a comfort/threshold breach
+  realtime_pace_s_per_step: 2.0       # AI-run wall-clock pacing (baseline=full speed)
+
+logging:
+  level: "INFO"
+  console_rich: true

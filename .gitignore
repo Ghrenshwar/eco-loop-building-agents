@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.pytest_cache/
+
+# EcoLoop run artifacts
+outputs/
+models/weather.epw
+models/generated/*.idf
+!models/generated/.gitkeep
+
+# EnergyPlus scratch that may land in the repo root
+eplusout.*
+*.eso
+*.mtr
+*.audit
+*.bnd
+*.rdd
+*.mdd
+*.shd
+*.svg

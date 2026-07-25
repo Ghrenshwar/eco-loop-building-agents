@@ -1,0 +1,48 @@
+# EcoLoop — control targets & economic/carbon signals.
+# Everything here is deterministic and offline for reproducibility (no live API).
+
+comfort:
+  pmv_band: [-0.5, 0.5]     # ISO 7730 Category B
+  ppd_max_pct: 10.0         # PPD ceiling implied by the PMV band
+  # Assumptions used by the PMV model when a sensor value is unavailable:
+  air_speed_ms: 0.1
+  met_rate: 1.1             # office metabolic rate
+  clo_summer: 0.5
+  clo_winter: 1.0
+
+occupancy:
+  # Occupied hours (local building time), used to score "occupied-hours in band".
+  # Days: 0=Mon .. 6=Sun. Outside these windows the deadband may widen (setback).
+  occupied_start_hour: 8
+  occupied_end_hour: 18
+  occupied_weekdays: [0, 1, 2, 3, 4]
+
+demand:
+  peak_threshold_kw: 40.0   # facility electric demand we try to stay under
+
+# Synthetic 24-value hourly carbon-intensity curve (gCO2 / kWh), index = local hour.
+# Higher midday (solar-net-load ramp) and evening peak — encourages pre-cooling
+# before the dirty hours and load-shedding during them.
+carbon_intensity_gco2_per_kwh:
+  [
+    210, 200, 195, 190, 190, 205, 240, 290,   #  0-7
+    330, 350, 360, 370, 380, 390, 410, 430,   #  8-15
+    460, 480, 470, 440, 400, 350, 300, 250,   # 16-23
+  ]
+
+# Simple time-of-use tariff ($/kWh), index = local hour. Peak 16:00-21:00.
+tariff_usd_per_kwh:
+  [
+    0.10, 0.10, 0.10, 0.10, 0.10, 0.10, 0.12, 0.14,   #  0-7
+    0.16, 0.16, 0.16, 0.18, 0.18, 0.18, 0.20, 0.22,   #  8-15
+    0.30, 0.30, 0.30, 0.30, 0.30, 0.16, 0.12, 0.10,   # 16-23
+  ]
+
+# Safety clamp ranges enforced by policy_guard (deg C). The LLM can never push
+# a setpoint outside these, regardless of what it proposes.
+safety:
+  heating_min_c: 18.0
+  heating_max_c: 23.0
+  cooling_min_c: 22.0
+  cooling_max_c: 28.0
+  min_deadband_c: 2.0       # cooling_sp - heating_sp must be >= this

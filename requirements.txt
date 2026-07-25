@@ -1,0 +1,29 @@
+# EcoLoop Building Agents — pinned runtime dependencies.
+#
+# NOTE: pyenergyplus is NOT a PyPI package. It ships *inside* the EnergyPlus
+# install directory (e.g. C:\EnergyPlusV24-2-0\pyenergyplus). setup.sh /
+# setup.ps1 add that directory to PYTHONPATH so `import pyenergyplus` works.
+
+# --- Simulation-adjacent ---
+eppy==0.5.63                 # static .idf reading/editing
+pythermalcomfort==2.10.0     # PMV/PPD comfort model
+
+# --- Local LLM + protocol ---
+ollama==0.3.3                # client for local Ollama runtime
+mcp==1.2.0                   # Model Context Protocol SDK (FastMCP lives here)
+
+# --- Data / IO ---
+pandas==2.2.3
+pyarrow==17.0.0              # Parquet
+numpy==1.26.4
+pyyaml==6.0.2
+pydantic==2.9.2             # validate config + LLM output schemas
+tenacity==9.0.0             # retries / timeouts
+rich==13.9.4                # console logging
+
+# --- Dashboard ---
+streamlit==1.39.0
+plotly==5.24.1
+
+# --- Testing ---
+pytest==8.3.3
