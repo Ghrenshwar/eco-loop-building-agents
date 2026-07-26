@@ -10,7 +10,7 @@ populated, and a terminal with the repo checked out.
 ## Shot 0 — Cold open (0:00–0:15)
 **On screen:** the dashboard headline metrics (kWh saved %, comfort in band %).
 **Say:** "This is an autonomous building controller. A local open-source LLM is
-running the HVAC of a simulated office — and it cut energy use by *X %* while
+running the HVAC of a simulated office — and it cut energy use by **3.2%** while
 keeping every occupant comfortable. No human in the loop. Here's how."
 
 ## Shot 1 — The digital twin (0:15–0:40)
@@ -67,16 +67,22 @@ modified `.idf` snapshot for the audit trail."
 **On screen:** dashboard cumulative-energy chart (baseline vs AI) and the
 headline metrics; then `summary.json` verdict `PASS`.
 **Say:** "Same building, same weather — the AI curve stays below the baseline the
-entire run. *X %* less energy, lower cost, lower carbon, comfort held. That's the
-whole point: measurable savings, proven, with comfort as a hard constraint."
+entire run. **3.2% less energy**, $1.08 cheaper, 2.1 kg less carbon, and comfort
+actually improved — 87.7% of occupied hours in band versus 84.1% for the baseline.
+That's the whole point: measurable savings, proven, with comfort as a hard constraint."
 
 ---
 
+### Verified numbers from this run (already filled into the script above)
+- **kWh saved: 3.2%** (baseline 172.5 → AI 167.0 kWh)
+- **Cost saved: $1.08**  ·  **Carbon saved: 2.1 kg**
+- **Comfort: 87.7% of occupied hours in band** (vs baseline 84.1%); mean PMV −0.19 vs −0.35
+- **11 LLM decisions · 7 self-corrections · 0 fallbacks** · verdict **PASS**
+
 ### Capture checklist
 - [ ] Terminal font large enough to read on video.
-- [ ] Dashboard pre-loaded (`streamlit run dashboard/app.py`).
-- [ ] `outputs/summary.json` shows a positive `kwh_reduction_pct` and `PASS`.
-- [ ] At least one `self_correction=true` row exists in `outputs/ai/decisions.jsonl`
-      (if not, lengthen the run or nudge a tighter comfort band).
+- [ ] Dashboard pre-loaded and refreshed (`streamlit run dashboard/app.py`, at http://localhost:8501).
+- [ ] `outputs/summary.json` shows `kwh_reduction_pct: 3.19` and `PASS`.
+- [ ] `outputs/ai/decisions.jsonl` shows 7 `self_correction=true` rows.
 - [ ] `models/generated/` contains `ai_step_*.idf` snapshots.
-- [ ] Replace every *X %* with the real number from your run.
+- [ ] Telemetry stream (`scripts/stream_telemetry.py`) and decision log (`scripts/show_decisions.py`) ready for Shots 3–4.
